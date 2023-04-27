@@ -19,22 +19,31 @@ class Papero extends Persona{
     }
 }
 
-class AlberoGenealogico{
-    radice : Persona;
-    famiglia: Array<Persona>;
+// Array<string>
 
-    constructor(radice: Persona){
-        this.radice = radice;
-        this.famiglia = [radice];
+class Nodo<Type>{
+    value:Type;
+    constructor(value: Type){
+        this.value = value;
+    } 
+}
+
+class AlberoGenealogico<Type>{
+    radice : Nodo<Type>;
+    famiglia: Array<Nodo<Type>>;
+
+    constructor(valoreRadice: Type){
+        this.radice = new Nodo(valoreRadice);
+        this.famiglia = [this.radice];
     }
 
-    addFiglio(figlio: Persona):void {
-        this.famiglia.push(figlio);
+    addFiglio(figlio: Type):void {
+        this.famiglia.push(new Nodo(figlio));
     }
 
-    rimuovi():Persona|undefined{
+    rimuovi():Type|undefined{
         // pila
-        return this.famiglia.pop();
+        return this.famiglia.pop()?.value;
         // coda
         // let ret = this.famiglia[0];
         // this.famiglia.splice(0,1);
@@ -42,7 +51,7 @@ class AlberoGenealogico{
     }
 
     toString(){
-        return this.famiglia;
+        return this.famiglia.map(nodo => nodo.value);
     }
 }
 
@@ -50,5 +59,4 @@ const quackmore = new Papero("Quackmore","Duck")
 const paperino = new Papero("Paperino","Duck")
 const duckFamily = new AlberoGenealogico(quackmore) 
 duckFamily.addFiglio(paperino)
-console.log("restituito: ",duckFamily.rimuovi());
 console.log(duckFamily.toString())
