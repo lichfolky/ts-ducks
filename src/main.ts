@@ -1,4 +1,8 @@
-class Persona{
+interface Printable{
+    toString():string;
+}
+
+class Persona implements Printable{
     nome: string;
     cognome: string;
 
@@ -6,7 +10,15 @@ class Persona{
         this.nome = nome;
         this.cognome = cognome;
       }
+
+    toString(): string {
+        return this.nome + " " + this.cognome;
+    }
 }
+
+// optional chaining
+let persona = new Persona("aaa","bb")
+//console.log(persona?.nome);
 
 type verso = () => string;
 
@@ -21,14 +33,17 @@ class Papero extends Persona{
 
 // Array<string>
 
-class Nodo<Type>{
+class Nodo<Type extends Printable>{
     value:Type;
+    figli: Array<Nodo<Type>>;
+
     constructor(value: Type){
         this.value = value;
+        this.figli = [];
     } 
 }
 
-class AlberoGenealogico<Type>{
+class AlberoGenealogico<Type extends Printable>{
     radice : Nodo<Type>;
     famiglia: Array<Nodo<Type>>;
 
@@ -37,8 +52,14 @@ class AlberoGenealogico<Type>{
         this.famiglia = [this.radice];
     }
 
-    addFiglio(figlio: Type):void {
-        this.famiglia.push(new Nodo(figlio));
+    addFiglio(valorePadre:Type, valoreFiglio: Type):void {
+        let padreTrovato = this.famiglia.find((nodo)=>nodo.value === valorePadre);
+        if(padreTrovato){
+            let figlio = new Nodo(valoreFiglio)
+            padreTrovato.figli.push(figlio);
+            this.famiglia.push(figlio);
+        }
+        //padreTrovato?.figli.push(new Nodo(valoreFiglio));
     }
 
     rimuovi():Type|undefined{
@@ -50,13 +71,33 @@ class AlberoGenealogico<Type>{
         // return ret;
     }
 
+    // vista in ampiezza
     toString(){
-        return this.famiglia.map(nodo => nodo.value);
+        let str = "";
+        let daVedere = [this.radice];
+        while(daVedere.length>0){
+            let current = daVedere[0];
+            daVedere.splice(0,1);
+            for (const figlio of current.figli) {
+                daVedere.push(figlio);
+            }
+            str += current.value.toString() + ", ";
+        }
+        return str;
     }
 }
 
 const quackmore = new Papero("Quackmore","Duck")
+const della = new Papero("Della","Duck")
 const paperino = new Papero("Paperino","Duck")
+const qui = new Papero("Qui","Duck")
+const quo = new Papero("Quo","Duck")
+const qua = new Papero("Qua","Duck")
+
 const duckFamily = new AlberoGenealogico(quackmore) 
-duckFamily.addFiglio(paperino)
+duckFamily.addFiglio(quackmore,paperino)
+duckFamily.addFiglio(quackmore,della)
+duckFamily.addFiglio(della,qui)
+duckFamily.addFiglio(della,quo)
+duckFamily.addFiglio(della,qua)
 console.log(duckFamily.toString())
