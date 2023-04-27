@@ -1,82 +1,54 @@
+class Persona{
+    nome: string;
+    cognome: string;
 
-
-interface Animale{
-  nome: string;
-  cognome: string;
-  tipo: string;
-  // opzionale
-  parla: verso | undefined;
+    constructor(nome:string,cognome:string){
+        this.nome = nome;
+        this.cognome = cognome;
+      }
 }
 
-class Papero implements Animale{
-  nome: string;
-  cognome: string;
-  tipo: string;
-  parla: verso | undefined;
+type verso = () => string;
 
-  constructor(nome:string,cognome:string, versoAnimale?:verso){
-    this.nome = nome;
-    this.cognome=cognome;
-    this.tipo = "papero";
-    this.parla = versoAnimale; 
-  }
+class Papero extends Persona{
+    parla: verso | undefined;
   
+    constructor(nome:string,cognome:string, versoAnimale?:verso){
+        super(nome,cognome)
+        this.parla = versoAnimale; 
+    }
 }
 
-//type verso = () => string;
-type verso = "Qua Qua" | "bau bau";
+class AlberoGenealogico{
+    radice : Persona;
+    famiglia: Array<Persona>;
 
-let numero = 30;
+    constructor(radice: Persona){
+        this.radice = radice;
+        this.famiglia = [radice];
+    }
 
-let paperino = {
-    nome:"Paperino",
-    cognome:"Duck",
-     tipo: "papero",
-     parla: undefined
+    addFiglio(figlio: Persona):void {
+        this.famiglia.push(figlio);
+    }
+
+    rimuovi():Persona|undefined{
+        // pila
+        return this.famiglia.pop();
+        // coda
+        // let ret = this.famiglia[0];
+        // this.famiglia.splice(0,1);
+        // return ret;
+    }
+
+    toString(){
+        return this.famiglia;
+    }
 }
 
-let paperoga = {
-  nome:"Paperoga",
-   tipo: "papero",
-   parla: undefined
-}
-
-let zioPaperone:Papero = new Papero("Zio Paperone","Duck");
-
-/*
-function convertToString(number:number):string{
-    let str:string = "" + number;
-    return str;
-}*/
-
-// restituisce nomi paperi
-// Array<Paperi> -> Array<string>
-
-function getNomiPaperi(paperi:Array<Papero>):Array<string>{
-    return paperi.map((roba:{nome:string}) => roba.nome);
-}
-
-function getNomiAnimali(paperi:Array<Animale>):Array<string>{
-  return paperi.map((roba:{nome:string}) => roba.nome);
-}
-
-
-//let result = [4,5,6].map(elemento => elemento);
-
-//console.log("result " + result)
-
-//let numeroTesto = convertToString(numero);
-let nuovoPaperoga = {...paperoga, cognome:"Duck"};
-
-let nomiPaperi = getNomiPaperi([nuovoPaperoga, zioPaperone, paperino]);
-console.log(nomiPaperi);
-
-let variabile:undefined;
-
-if(variabile == undefined){
-
-}
-
-if(typeof variabile == undefined){
-
-}
+const quackmore = new Papero("Quackmore","Duck")
+const paperino = new Papero("Paperino","Duck")
+const duckFamily = new AlberoGenealogico(quackmore) 
+duckFamily.addFiglio(paperino)
+console.log("restituito: ",duckFamily.rimuovi());
+console.log(duckFamily.toString())
