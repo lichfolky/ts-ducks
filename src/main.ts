@@ -118,12 +118,12 @@ class AlberoGenealogico<Type extends Printable>{
         let tree = document.querySelector(".albero");
         if (tree) {
             for (let i = 0; i < visita.length; i++) {
-                this.printLv(tree, visita[i], i);
+                this.printLvDom(tree, visita[i], i);
             }
         }
     }
 
-    printLv(treeElement: Element, values: (Type | [Type, Type])[], livello: number) {
+    printLvDom(treeElement: Element, values: (Type | [Type, Type])[], livello: number) {
         //treeElement.innerHTML += "<div>" + this.radice.value + "</div>";
         let lvNode = document.createElement("div");
         lvNode.style.display = "flex";
@@ -139,6 +139,54 @@ class AlberoGenealogico<Type extends Printable>{
     // printNodo(value: Type, posizione: number, livello: number) {
 
     // }
+
+    printCanvas() {
+        let visita = this.visitaAmpiezza();
+        let tree = document.querySelector(".albero");
+        if (tree) {
+            for (let i = 0; i < visita.length; i++) {
+                this.printCanvasLv(visita[i], i);
+            }
+        }
+    }
+
+    printCanvasLv(visitaLv: (Type | [Type, Type])[], lv: number) {
+        for (let j = 0; j < visitaLv.length; j++) {
+            this.printCanvasNodo(visitaLv[j].toString(), lv, j);
+            console.log("lv: " + j)
+        }
+    }
+
+    printCanvasNodo(testo: string, lv: number, pos: number) {
+        if (canvasEl) {
+            const ctx = canvasEl.getContext("2d");
+            if (ctx) {
+                let marginX = 10;
+                let marginY = 10;
+                let rectH = 50;
+                let rectW = 150;
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = "#454545";
+                // x, y, larghezza, altezza
+                ctx.strokeRect(
+                    marginX + marginX * pos + rectW * pos,
+                    marginY + marginY * lv + rectH * lv,
+                    rectW, rectH);
+                ctx.fillStyle = "#w";
+                ctx.fillStyle = "black";
+                ctx.font = "1rem serif";
+                ctx.fillText(testo,
+                    2 * marginX + marginX * pos + rectW * pos,
+                    rectH / 2 + marginY * 1.5 + marginY * lv + rectH * lv);
+            }
+        }
+    }
+}
+
+let canvasEl = document.querySelector("canvas");
+if (canvasEl) {
+    canvasEl.width = window.innerWidth;
+    canvasEl.height = window.innerWidth;
 }
 
 const quackmore = new Papero("Quackmore", "Duck")
@@ -157,3 +205,5 @@ duckFamily.addFiglio(della, quo)
 duckFamily.addFiglio(della, qua)
 //console.log(duckFamily.toString())
 duckFamily.printDom();
+duckFamily.printCanvas();
+
